@@ -67,8 +67,6 @@ export const addUser = async (projectId, users, userId) => {
     throw new Error("Project not found");
   }
 
-  console.log("project", project);
-
 
   const updatedProject = await projectModal.findOneAndUpdate(
     {
@@ -83,7 +81,6 @@ export const addUser = async (projectId, users, userId) => {
       new: true,
     }
   );
-  console.log("updatedProject", updatedProject);
   return updatedProject;
 };
 
