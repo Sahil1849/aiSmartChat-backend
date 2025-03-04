@@ -24,7 +24,7 @@ router.post(
 
 router.get("/profile",authMiddleware.authUser, userController.getUserProfile);
 
-router.get("/logout", authMiddleware.authUser, userController.logoutUserController);
+router.post("/logout", authMiddleware.authUser, userController.logoutUserController);
 
 router.get("/all", authMiddleware.authUser, userController.getAllUsers);
 

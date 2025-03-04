@@ -49,7 +49,7 @@ export const addUser = async (req, res) => {
 export const getProjectById = async (req, res) => {
   const { projectId } = req.params;
   try {
-    const project = await projectService.getProjectById({projectId});
+    const project = await projectService.getProjectById({ projectId });
     return res.status(200).json({ project });
   } catch (error) {
     console.log(error);
