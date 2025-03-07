@@ -63,10 +63,8 @@ io.on("connection", (socket) => {
 
   // Handle custom events
   socket.on("project-message", async (data) => {
-    console.log(data);
+    
     const message = data.message;
-    console.log(message)
-
     // Broadcast the message to others in the same room
     socket.broadcast.to(roomId).emit("project-message", data);
     const isAiPresent = message.includes("@ai");

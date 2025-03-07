@@ -20,3 +20,11 @@ export const getAllUsersService = async ({ userId }) => {
   const users = await User.find({ _id: { $ne: userId } });
   return users;
 };
+
+export const getUserProfileService = async ({ id }) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+}

@@ -5,13 +5,19 @@ const projectSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
     required: true,
-    unique: [true, "Project already exists"],
     trim: true,
   },
-  user: [
+  members: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+      role: {
+        type: String,
+        enum: ["admin", "collaborator"],
+        default: "collaborator",
+      },
     },
   ],
 });

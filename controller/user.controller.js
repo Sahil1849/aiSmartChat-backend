@@ -45,7 +45,7 @@ export const loginUserController = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: "Incorrect Email or Password" });
     }
 
     // Validate password
@@ -67,7 +67,20 @@ export const loginUserController = async (req, res) => {
 };
 
 export const getUserProfile = async (req, res) => {
-  res.status(200).json({ user: req.user });
+
+  try {
+    const id = req.params.id;
+    const user = await userService.getUserProfileService({ id });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ status: "success", data: user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const logoutUserController = async (req, res) => {
@@ -86,7 +99,7 @@ export const getAllUsers = async (req, res) => {
   try {
     const loggedInUser = await User.findOne({ email: req.user.email });
     const userId = loggedInUser._id;
-    const users = await userService.getAllUsersService({userId});
+    const users = await userService.getAllUsersService({ userId });
     return res.status(200).json({ users });
   } catch (error) {
     console.log(error);
