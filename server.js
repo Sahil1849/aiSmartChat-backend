@@ -63,10 +63,14 @@ io.on("connection", (socket) => {
 
   // Handle custom events
   socket.on("project-message", async (data) => {
-    
+
     const message = data.message;
+    const timestamp = new Date().toLocaleTimeString();
     // Broadcast the message to others in the same room
-    socket.broadcast.to(roomId).emit("project-message", data);
+    socket.broadcast.to(roomId).emit("project-message", {
+      ...data,
+      timestamp,
+    });
     const isAiPresent = message.includes("@ai");
 
     if (isAiPresent) {
@@ -74,9 +78,16 @@ io.on("connection", (socket) => {
       const prompt = message.replace("@ai", "").trim();
       const aiResponse = await resultMessage(prompt);
 
+      // Ensure the AI response is a string
+      if (typeof aiResponse !== "string") {
+        console.error("Invalid AI response type:", aiResponse);
+        return;
+      }
+
       io.to(roomId).emit("project-message", {
-        message: aiResponse,
-        sender: "AI"
+        message:aiResponse,
+        sender: "AI",
+        timestamp: new Date().toLocaleTimeString(),
       });
     }
   });
