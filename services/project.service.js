@@ -239,10 +239,20 @@ export const exitProjectService = async (projectId, loggedInUserId) => {
     const adminCount = project.members.filter(m => m.role === 'admin').length;
 
     if (adminCount <= 1) {
-      throw new Error("Project admin cannot exit the project. Transfer ownership first.");
+      // If there's only one admin, find another member to transfer admin rights to
+      const otherMemberIndex = project.members.findIndex(
+        (m) => !m.user.equals(loggedInUserId)
+      );
+
+      if (otherMemberIndex === -1) {
+        throw new Error("Cannot Exit. Delete the Project");
+      }
+
+      // Transfer admin rights to the next available member
+      project.members[otherMemberIndex].role = 'admin';
     }
 
-    // Remove the admin if there are other admins
+    // Remove the admin from the project
     project.members.splice(memberIndex, 1);
   }
   // Handle Collaborator exit

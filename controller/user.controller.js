@@ -51,7 +51,7 @@ export const loginUserController = async (req, res) => {
     // Validate password
     const isValidPassword = await user.validatePassword(password);
     if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid password." });
+      return res.status(400).json({ message: "Invalid password." });
     }
 
     // Generate token
@@ -101,6 +101,18 @@ export const getAllUsers = async (req, res) => {
     const userId = loggedInUser._id;
     const users = await userService.getAllUsersService({ userId });
     return res.status(200).json({ users });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export const deleteUserController = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("userId: " + userId);
+    const user = await userService.deleteUserService(userId)
+    res.status(200).json({ message: "User Account deleted successfully.", user });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });

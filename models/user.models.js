@@ -30,7 +30,7 @@ userSchema.methods.validatePassword = async function (password) {
 
 userSchema.methods.generateToken = function () {
   return jwt.sign({ email: this.email, id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: "24hr",
+    expiresIn: "72hr",
   });
 };
 

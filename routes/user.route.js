@@ -30,4 +30,6 @@ router.get("/all", authMiddleware.authUser, userController.getAllUsers);
 
 router.get("/currentUser/:id", authMiddleware.authUser, userController.getUserProfile);
 
+router.delete("/delete/:id", authMiddleware.authUser, userController.deleteUserController);
+
 export default router;
