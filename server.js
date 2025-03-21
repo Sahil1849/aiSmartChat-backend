@@ -15,7 +15,7 @@ const server = http.createServer(app);
 // Set up Socket.io with proper CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "*", // Replace with your frontend URL in production
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
