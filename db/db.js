@@ -8,7 +8,6 @@ const connectDB = () => {
         })
         .catch((err) => {
             console.log("MongoDB Connection Error: ", err);
-        console.log("Error: ", err);
         });
 };
 

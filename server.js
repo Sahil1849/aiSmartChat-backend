@@ -8,28 +8,32 @@ import Project from "./models/project.models.js";
 import { resultMessage } from "./services/ai.service.js";
 
 const port = process.env.PORT || 3000;
-
-// Create the HTTP server
 const server = http.createServer(app);
 
-// Set up Socket.io with proper CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    // IMPORTANT: Use the full production URL including protocol
+    origin: [
+      "https://ai-smart-chat-frontend.vercel.app",
+      "http://localhost:5173",
+      "*"
+    ],
+    credentials: true,
     methods: ["GET", "POST"],
   },
+  // Force websocket transport (and allow polling fallback if needed)
+  transports: ["websocket", "polling"],
 });
 
-// Middleware to verify JWT tokens for socket connections
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.auth?.token ||
+    const token =
+      socket.handshake.auth?.token ||
       socket.handshake.headers?.authorization?.split(" ")[1];
 
     if (!token) return next(new Error("No token provided"));
 
     const projectId = socket.handshake.query.projectId;
-
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return next(new Error("Invalid projectId provided"));
     }
@@ -52,7 +56,6 @@ io.use(async (socket, next) => {
   }
 });
 
-// Handle socket connections
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.user);
 
@@ -61,49 +64,45 @@ io.on("connection", (socket) => {
   socket.join(roomId);
   console.log(`Client joined room: ${roomId}`);
 
-  // Handle custom events
   socket.on("project-message", async (data) => {
-
     const message = data.message;
     const timestamp = new Date().toLocaleTimeString();
+
     // Broadcast the message to others in the same room
     socket.broadcast.to(roomId).emit("project-message", {
       ...data,
       timestamp,
     });
-    const isAiPresent = message.includes("@ai");
 
+    // Check for AI trigger keyword
+    const isAiPresent = message.includes("@ai");
     if (isAiPresent) {
-      // Send AI response to the client
       const prompt = message.replace("@ai", "").trim();
       const aiResponse = await resultMessage(prompt);
 
-      // Ensure the AI response is a string
       if (typeof aiResponse !== "string") {
         console.error("Invalid AI response type:", aiResponse);
         return;
       }
 
+      // Emit the AI response to everyone in the room
       io.to(roomId).emit("project-message", {
-        message:aiResponse,
+        message: aiResponse,
         sender: "AI",
         timestamp: new Date().toLocaleTimeString(),
       });
     }
   });
 
-  // Handle client disconnection
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 });
 
-// Start the server
 server.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
 
-// Error handling for the server
 server.on("error", (err) => {
   console.error("Server error:", err);
 });
