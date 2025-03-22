@@ -16,7 +16,6 @@ const io = new Server(server, {
     origin: [
       "https://ai-smart-chat-frontend.vercel.app",
       "http://localhost:5173",
-      "*"
     ],
     credentials: true,
     methods: ["GET", "POST"],

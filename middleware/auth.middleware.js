@@ -27,7 +27,7 @@ export const authUser = async (req, res, next) => {
 
     // Verify JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach decoded user data to the request object
+    req.user = decoded; // decoded user data to the request object
     next();
   } catch (error) {
     console.error("Authentication error:", error);
